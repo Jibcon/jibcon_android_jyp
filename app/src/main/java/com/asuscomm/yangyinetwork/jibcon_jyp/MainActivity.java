@@ -25,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    private final String TAG = "jaeyoung/"+getClass().getSimpleName();
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -62,12 +63,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initHeaderView() {
+        Log.d(TAG, "initHeaderView: ");
         mDiscreteProgress = (SeekBar) findViewById(R.id.discreteProgress);
         mNextBtn = (ImageButton) findViewById(R.id.nextBtn);
         mSkipBtn = (ImageButton) findViewById(R.id.skipBtn);
     }
 
     private void initHeaderViewListener() {
+        Log.d(TAG, "initHeaderViewListener: ");
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                Log.d(TAG, "onPageSelected() called with: position = [" + position + "]");
                 mDiscreteProgress.setProgress(position);
             }
 
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         mDiscreteProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.d(TAG, "onProgressChanged() called with: seekBar = [" + seekBar + "], progress = [" + progress + "], fromUser = [" + fromUser + "]");
                 if(fromUser) {
                     mViewPager.setCurrentItem(progress);
                 }
@@ -107,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         mNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: "+"mNextBtn");
                 mViewPager.setCurrentItem(mViewPager.getCurrentItem()+1);
             }
         });
@@ -114,13 +120,14 @@ public class MainActivity extends AppCompatActivity {
         mSkipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: "+"mSkipBtn");
                 goNextActivity();
             }
         });
     }
 
     public void goNextActivity() {
-
+        Log.d(TAG, "goNextActivity: ");
     }
 
     @Override
@@ -149,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
+        private final String TAG = "jaeyoung/"+getClass().getSimpleName();
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -173,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            Log.d(TAG, "onCreateView: ");
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             int sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
             int sectionNumberAsIndex = sectionNumber - 1;
@@ -188,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                 startBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Log.d(TAG, "onClick: "+"startBtn");
                         // start new activity
                         ((MainActivity)getActivity()).goNextActivity();
                     }
@@ -218,11 +228,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 4 total pages.
-            return getResources().getInteger(R.integer.tutorial_number);
+            int tutorial_number = getResources().getInteger(R.integer.tutorial_number);
+            Log.d(TAG, "getCount: "+tutorial_number);
+            return tutorial_number;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
+            Log.d(TAG, "getPageTitle: ");
             switch (position) {
                 case 0:
                     return "SECTION 1";
