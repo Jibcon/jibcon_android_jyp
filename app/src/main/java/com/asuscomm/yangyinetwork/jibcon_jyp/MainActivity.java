@@ -1,5 +1,6 @@
 package com.asuscomm.yangyinetwork.jibcon_jyp;
 
+import android.content.res.Resources;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,12 +11,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,11 +40,15 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private SeekBar mDiscreteProgress;
+    private ImageButton mNextBtn, mSkipBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initHeaderView();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -48,18 +58,70 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        initHeaderViewListener();
+    }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+    private void initHeaderView() {
+        mDiscreteProgress = (SeekBar) findViewById(R.id.discreteProgress);
+        mNextBtn = (ImageButton) findViewById(R.id.nextBtn);
+        mSkipBtn = (ImageButton) findViewById(R.id.skipBtn);
+    }
+
+    private void initHeaderViewListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mDiscreteProgress.setProgress(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
 
+        mDiscreteProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser) {
+                    mViewPager.setCurrentItem(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        mNextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewPager.setCurrentItem(mViewPager.getCurrentItem()+1);
+            }
+        });
+
+        mSkipBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goNextActivity();
+            }
+        });
     }
 
+    public void goNextActivity() {
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -112,8 +174,26 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            int sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
+            int sectionNumberAsIndex = sectionNumber - 1;
+
+            TextView tutorialHeadTv = (TextView) rootView.findViewById(R.id.tutorialHeadTv);
+            TextView tutorialDetailTv = (TextView) rootView.findViewById(R.id.tutorialDetailTv);
+            Button startBtn = (Button) rootView.findViewById(R.id.startBtn);
+
+            tutorialHeadTv.setText(getResources().getStringArray(R.array.tutorial_head)[sectionNumberAsIndex]);
+            tutorialDetailTv.setText(getResources().getStringArray(R.array.tutorial_detail)[sectionNumberAsIndex]);
+            if (sectionNumber == getResources().getInteger(R.integer.tutorial_number)) {
+                startBtn.setVisibility(View.VISIBLE);
+                startBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // start new activity
+                        ((MainActivity)getActivity()).goNextActivity();
+                    }
+                });
+            }
+
             return rootView;
         }
     }
@@ -137,8 +217,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 4 total pages.
+            return getResources().getInteger(R.integer.tutorial_number);
         }
 
         @Override
@@ -150,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
                     return "SECTION 2";
                 case 2:
                     return "SECTION 3";
+                case 3:
+                    return "SECTION 4";
             }
             return null;
         }
